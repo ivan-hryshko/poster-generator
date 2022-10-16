@@ -119,17 +119,11 @@
 <script>
   import { ref } from 'vue';
   import { useRoute } from 'vue-router';
-  import { mapMutations } from 'vuex'
+  import { mapMutations, mapGetters } from 'vuex'
 
   export default {
     name: 'ChooseColor',
     components: {
-    },
-    setup() {
-      // console.log('this.$route.params :>> ', this.$route.query);
-
-      return {
-      }
     },
     data: () => ({
       colors: {
@@ -141,13 +135,13 @@
       imagePath: 'https://www.missionjuno.swri.edu/Vault/VaultOutput?VaultID=44805&ts=1656511106',
     }),
     computed: {
-      chosenData () {
-        return this.$store.state.chosenData
-      }
+      ...mapGetters({
+        chosenData: 'getChosenData',
+      }),
     },
     methods: {
       ...mapMutations([
-        'setChosenImage', // map `this.increment()` to `this.$store.commit('increment')`
+        'setChosenImage',
       ]),
       changeActive(color) {
         for (const key in this.colors) {
@@ -178,9 +172,8 @@
 
     },
     mounted() {
-      // console.log('this.$route.query :>> ', this.$route.query);
-      console.log('this.$store.state.stateHello :>> ', this.$store.state.helloState);
       this.setChosenImage(this.chosenData.image)
+      this.imagePath = this.chosenData.image
     },
   }
 </script>

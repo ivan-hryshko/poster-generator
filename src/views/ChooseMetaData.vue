@@ -25,7 +25,9 @@
         :display="3"
       >
         <slide :index="0" color="red">
-          <DesignTemplate1 />
+          <div id="my-node">
+            <DesignTemplate1 />
+          </div>
         </slide>
         <slide :index="1">
           <DesignTemplate
@@ -51,6 +53,9 @@
   import { Carousel3d, Slide } from 'vue-carousel-3d';
   import DesignTemplate from '@/components/design-template';
   import DesignTemplate1 from '@/components/design-template-1';
+  import { mapMutations } from 'vuex'
+  import * as htmlToImage from 'html-to-image';
+  import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
 
   export default {
     name: 'ChooseMetaData',
@@ -67,6 +72,12 @@
     },
     data: () => ({
     }),
+    methods: {
+      ...mapMutations([
+        'setTargetElement',
+        'setResultPhoto',
+      ]),
+    }
   }
 </script>
 

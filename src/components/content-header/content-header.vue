@@ -47,7 +47,6 @@ export default {
   },
   setup(props) {
     function HelloWorld() {
-      console.log('hello');
       this.router.push({name: 'choose-color'})
     }
 

@@ -9,26 +9,11 @@
         <div class="btn btn-border"><h5 class="btn__text"> Preview</h5></div>
       </div>
     </div>
-    <div
-      v-if="isRealData"
-      class="gallery"
-    >
+      <div class="gallery">
       <SpaceImage
         v-for="item, index in fullData"
         :key="index"
         :image-item="item"
-        :is-real-data="isRealData"
-      />
-    </div>
-    <div
-      v-else
-      class="gallery"
-    >
-      <SpaceImage
-        v-for="item, index in fakeData"
-        :key="index"
-        :image-item="item"
-        :is-real-data="isRealData"
       />
     </div>
   </div>
@@ -48,38 +33,21 @@
       SpaceImage,
     },
     setup() {
-      const imageList = ref([])
-      const combinedList = ref([])
-      const isRealData = ref(false)
-      const fakeData = ref([])
-      fakeData.value.push({
-        image: 'https://www.missionjuno.swri.edu/Vault/VaultOutput?VaultID=44805&ts=1656511106',
-        image_r: 'https://d2xkkdgjnsfvb0.cloudfront.net/Vault/Thumb?VaultID=44763&Interlaced=1&Mode=R&ResX=960&OutputFormat=jpg&Quality=90&ts=1656511106',
-        image_g: 'https://d2xkkdgjnsfvb0.cloudfront.net/Vault/Thumb?VaultID=44665&Interlaced=1&Mode=R&ResX=960&OutputFormat=jpg&Quality=90&ts=1656511106',
-        image_b: 'https://www.missionjuno.swri.edu/Vault/VaultOutput?VaultID=44805&ts=1656511106',
-        metadata: dataset
-      })
 
-      for (let index = 0; index < 10; index++) {
-        fakeData.value.push(fakeData.value[0])
+      return {
       }
-
-      console.log('fakeData.value :>> ', fakeData.value);
-
-
-      // const url = 'http://localhost:8000/api/'
-      // const url = 'https://www.random.org/'
-      const url = 'http://44.206.255.237:8000/api'
-      const client = axios.create({
-        baseURL: url,
-        timeout: 1000,
-      });
-
-      const fullData = computed(() => {
+    },
+    data: () => ({
+      width: 900,
+      imageList:[],
+      combinedList: [],
+    }),
+    computed: {
+      fullData: function() {
         let newArray = []
-        newArray = combinedList.value.slice()
+        newArray = this.combinedList.slice()
         for (const combinedItem of newArray) {
-          for (const imageGroup of imageList.value) {
+          for (const imageGroup of this.imageList) {
             if (imageGroup.id === combinedItem.from_images)
             combinedItem.metadata = imageGroup.metadata
             combinedItem.image_b = imageGroup.image_b
@@ -88,51 +56,37 @@
           }
           // combinedItem.from_images
         }
-        console.log('newArray :>> ', newArray);
         return newArray
-      })
-
-      async function getImageList() {
-        imageList.value = await client.get('/rgb_list')
-        imageList.value = imageList.value.data
-        console.log('imageList.value :>> ', imageList.value);
-      }
-
-      async function getCombinedList() {
-        combinedList.value = await client.get('/combined_list')
-        combinedList.value = combinedList.value.data
-        console.log('combinedList.value :>> ', combinedList.value);
-      }
-
-      function getRrquest() {
-        isRealData.value = true
-
-        getImageList()
-        getCombinedList()
-      }
-
-      // getRrquest()
-
-      return {
-        dataset,
-        combinedList,
-        fullData,
-        isRealData,
-        fakeData,
       }
     },
-    data: () => ({
-      width: 900,
-    }),
     methods: {
       ...mapMutations([
         'saveFullData', // map `this.increment()` to `this.$store.commit('increment')`
       ]),
+
+      getRequest(client) {
+        this.getImageList(client)
+        this.getCombinedList(client)
+      },
+
+      async getImageList(client) {
+        this.imageList = await client.get('/rgb_list')
+        this.imageList = this.imageList.data
+      },
+
+      async getCombinedList(client) {
+        this.combinedList = await client.get('/combined_list')
+        this.combinedList = this.combinedList.data
+      },
     },
     mounted() {
-      this.saveFullData(this.fakeData)
-      console.log('this.$store.state.fullDatas :>> ', this.$store.state.fullDatas);
-
+      const url = 'https://junonian.earth/api'
+      const client = axios.create({
+        baseURL: url,
+        timeout: 1000,
+      });
+      this.getRequest(client)
+      this.saveFullData(this.fullData)
     }
   }
 </script>

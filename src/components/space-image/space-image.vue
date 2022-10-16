@@ -61,18 +61,11 @@ export default {
         return {}
       },
     },
-    isRealData: {
-      type: Boolean,
-      default: false,
-    }
   },
   setup(props) {
     function HelloWorld() {
-      console.log('hello');
       this.$router.push({name: 'choose-color'})
     }
-
-    // console.log('props.imagePath :>> ', props.imageItem);
 
     return {
       HelloWorld
@@ -85,8 +78,6 @@ export default {
     choseImage() {
       this.setChosenData(this.imageItem)
       this.$router.push({path: '/choose-color'})
-      console.log('this.$store.state.chosenData :>> ', this.$store.state.chosenData);
-
     },
   },
 }
